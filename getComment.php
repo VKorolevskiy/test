@@ -48,10 +48,7 @@ echo '<article class="comment">';
                         'delete' => $value[$key]->get('delete'),
                         'alias' => $alias
                     ));
-                    echo '<article class="comment">';
-                    echo $output;
-                    echo  '</article>';
-
+                    echo '<article class="comment">'.$output.'</article>';
                 }
             }
 
