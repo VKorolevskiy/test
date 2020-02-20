@@ -1,7 +1,5 @@
 
 <?php
-
-
 $where = $modx->newQuery('Comment');
 $where->sortby('id','ASC');
 $where->where(array(
@@ -12,7 +10,7 @@ $comments = $modx->getCollection('Comment',$where);
  
 foreach ($comments as $k => $res) {
 
-    if ($res->get('parentid') == 0) {
+   // if ($res->get('parentid') == 0) {
 
     $userid = $res->get('userid');
     $time = $res->get('create');
@@ -35,7 +33,7 @@ foreach ($comments as $k => $res) {
         echo $output;
 
     }
-   }
+  // }
 
 }
 ?>
