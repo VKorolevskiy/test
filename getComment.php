@@ -1,4 +1,3 @@
-
 <?php
 $where = $modx->newQuery('Comment');
 $where->sortby('id','ASC');
@@ -7,33 +6,59 @@ $where->where(array(
 ));
 
 $comments = $modx->getCollection('Comment',$where);
- 
-foreach ($comments as $k => $res) {
 
-   // if ($res->get('parentid') == 0) {
+$alias = $modx->resource->get('uri');
 
-    $userid = $res->get('userid');
-    $time = $res->get('create');
-    $comment = $res->get('comment');
-    $idcomment = $res->get('id');
-    $delete = $res->get('delete');
+$categoryTree = [];
+foreach ($comments as $res) {
+    if($res->get('parentid') == 0) {
+        $categoryTree[$res->get('id')][] = $res;
+    }
+    else {
+        $categoryTree[$res->get('parentid')][] = $res;
+    }
+}
+
+
+foreach ($categoryTree as $k => $value) {
+
+echo '<article class="comment">';
 
     if ($pdoTools = $modx->getService('pdoTools')) {
-
-
         $output = $pdoTools->getChunk('@FILE: particular/article/commentItem.html', array(
-            'userid' => $userid,
-            'time' => $time,
-            'idcomment' => $idcomment,
-            'comment' => $comment,
-            'delete' => $delete,
-            'alias' => $modx->resource->get('uri')
+            'userid' => $value[0]->get('userid'),
+            'time' => $value[0]->get('create'),
+            'idcomment' => $value[0]->get('id'),
+            'comment' => $value[0]->get('comment'),
+            'delete' => $value[0]->get('delete'),
+            'alias' => $alias
         ));
-
         echo $output;
 
+
+        if(!empty($value[1])) {
+
+            foreach($value as $key => $val) {
+                if($key != 0) {
+                    $output = $pdoTools->getChunk('@FILE: particular/article/commentItem.html', array(
+                        'userid' => $value[$key]->get('userid'),
+                        'time' => $value[$key]->get('create'),
+                        'idcomment' => $value[$key]->get('id'),
+                        'comment' => $value[$key]->get('comment'),
+                        'delete' => $value[$key]->get('delete'),
+                        'alias' => $alias
+                    ));
+                    echo '<article class="comment">';
+                    echo $output;
+                    echo  '</article>';
+
+                }
+            }
+
+        }
+
     }
-  // }
+
+echo '</article>';
 
 }
-?>
